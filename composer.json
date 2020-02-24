@@ -1,0 +1,18 @@
+{
+    "name": "hilevel/cms.loc",
+    "authors": [
+        {
+            "name": "Stepan Gervik",
+            "email": "me@hilevel.ga"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Engine\\": "Engine",
+            "Cms\\": "Cms",
+            "Admin\\": "Admin",
+            "Engine\\DI\\": "Engine/DI"
+        }
+    }
+}
