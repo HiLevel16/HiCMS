@@ -115,11 +115,11 @@ class QueryBuilder
 
         if(!empty($data)) {
             foreach ($data as $key => $value) {
-                $this->sql['set'] .= "{$key} = ?";
+                $this->sql['set'] .= "{$key} = :{$key}";
                 if (next($data)) {
                     $this->sql['set'] .= ", ";
                 }
-                $this->values[]    = $value;
+                $this->values[$key]    = $value;
             }
         }
 

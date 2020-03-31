@@ -24,7 +24,7 @@ abstract class Controller
 		$this->init();
 	}
 
-	private function init()
+	protected function init()
 	{
 		$activeTheme = Setting::getActiveTheme();
 

@@ -17,13 +17,14 @@ class Router
 
 		$this->dispatcher = new Dispatcher();
 
-		include(Url::getRoot() . '/'.ENV.'/Routes.php');
+		include(Url::getRoot() . '/App/'.ENV.'/Routes.php');
 
 		return;
 	}
 
 	private function add($name, $controller, $pattern, $method = 'GET')
 	{
+		$pattern = rtrim($pattern, '/');
 		$pattern = $this->dispatcher->dispatchPattern($pattern);
 
 		$route = new DispatchedRoute($name, $controller, $pattern, $method);

@@ -8,11 +8,14 @@ namespace Engine\Core\Database;
 trait ActiveRecord
 {
 	protected $db;
+
+    protected $queryBuilder;
 	
 	function __construct($id = 0)
 	{
 		$dbCredentials = \Engine\Helper\Config\Config::getCoreConfig('DBsettings');
 		$this->db = new \Engine\Core\Database\DB($dbCredentials);
+        $this->queryBuilder = new QueryBuilder();
 
 		if ($id) {
             $this->setId($id);
@@ -42,10 +45,9 @@ trait ActiveRecord
 
     public function save() {
         $properties = $this->getIssetProperties();
-
         try {
             if (isset($this->id)) {
-                $save = $this->db->rawQuery(
+                $save = $this->db->query(
                     $this->queryBuilder->update($this->getTable())
                         ->set($properties)
                         ->where('id', $this->id)
@@ -53,7 +55,8 @@ trait ActiveRecord
                     $this->queryBuilder->values
                 );
             } else {
-                $save = $this->db->rawQuery(
+
+                $save = $this->db->query(
                     $this->queryBuilder->insert($this->getTable())
                         ->set($properties)
                         ->sql(),
@@ -89,8 +92,8 @@ trait ActiveRecord
      */
     private function getProperties()
     {
-        $reflection = new ReflectionClass($this);
-        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $reflection = new \ReflectionClass($this);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
 
         return $properties;
     }

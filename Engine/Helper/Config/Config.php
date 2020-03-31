@@ -21,7 +21,7 @@ class Config
 
 	public static function getCoreConfig($configName)
 	{
-		$path = UrlHelper::getRoot().'/Engine/Core/config/'.$configName.'.php';
+		$path = UrlHelper::getRoot().'/Engine/config/'.$configName.'.php';
 
 		if(is_file($path)) {
 			return include $path;

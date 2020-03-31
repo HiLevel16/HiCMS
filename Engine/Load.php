@@ -11,12 +11,13 @@ class Load
 	const JS_ENDING = '.js';
 	const CSS_ENDING = '.css';
 
-	const MASK_MODEL_ENTITY     = '\%s\Model\%s\%s';
-    const MASK_MODEL_PROCESSOR = '\%s\Model\%s\%sProcessor';
+	const MASK_MODEL_ENTITY     = '\App\%s\Model\%s\%s';
+    const MASK_MODEL_PROCESSOR = '\App\%s\Model\%s\%sProcessor';
 
 
 	public static function getAssetPath($lang, $path, $themePath)
 	{
+		$loadPath = '';
 		switch ($lang) {
 			case 'js':
 				$loadPath = static::getJsPath($path, $themePath);
@@ -43,27 +44,25 @@ class Load
 	{
 		switch ($lang) {
 			case 'css':
-				return "<link rel='stylesheet' href=".$path.">\n";
+				return "<link rel='stylesheet' href=".$path." ".$parameters.">\n";
 				break;
 			
 			case 'js':
-				return "<script src=".$path."></script>\n";
+				return "<script ".$parameters." src=".$path."></script>\n";
 				break;
 		}
 	}
 
-	public static function Model($modelName)
+	public static function Model($modelName, $env = null)
 	{
 		$modelName = ucfirst($modelName);
 
 		$namespaceModel = sprintf(
             self::MASK_MODEL_PROCESSOR,
-            ENV, $modelName, $modelName
+            $env ?? ENV, $modelName, $modelName
         );
 
         
-        	return new $namespaceModel;
-        
-        return null;
+    	return new $namespaceModel;
 	} 
 }

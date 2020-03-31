@@ -10,24 +10,30 @@ class Session
 
 	public static function get($key)
 	{
-		return isset($_COOKIE[$key]) ? $_COOKIE[$key] : $_SESSION[$key];
+		if (!empty($_COOKIE[$key]))
+			return $_COOKIE[$key];
+		elseif (!empty($_SESSION[$key]))
+			return $_SESSION[$key];
+		else 
+			return null;
+		
 	}
 
-	public static function set($key, $value, $oneTime = false)
+	public static function set($key, $value, $remember = false)
 	{
-		if ($oneTime && !isset($_SESSION[$key])) 
+		if (!$remember) 
 			$_SESSION[$key] = $value;
-		elseif (!$oneTime && !isset($_COOKIE[$key])) {
-			setcookie($key, $value, time()+60*60*24*365*10);
+		else {
+			setcookie($key, $value, time()+60*60*24*365*10, '/');
 		}
 	}
 
 	public static function delete($key)
 	{
-		if (isset($_SESSION[$key])) 
-			unset($_SESSION[$key]);
-		if (isset($_COOKIE[$key])) {
-			setcookie($key, '1', 1);
-		}
+		unset($_SESSION[$key]);
+
+		setcookie($key, null, -1, '/');
+
+		
 	}
 }

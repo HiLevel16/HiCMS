@@ -53,7 +53,7 @@ class DB
         $this->isConnected = false;
     }
 
-    public function query($query, $parameters = [], $mode = \PDO::FETCH_ASSOC)
+    public function query($query, $parameters = [], $mode = \PDO::FETCH_OBJ)
     {
         $query = trim(str_replace('\r', '', $query));
 
@@ -72,18 +72,6 @@ class DB
         }
     }
 
-    public function rawQuery($query)
-    {
-        $sth = $this->pdo->execute($query);
-
-        $result = $sth->fetchAll($statement);
-
-        if ($result === false) {
-            return [];
-        }
-
-        return $result;
-    }
 
     private function init($query, $parameters = [])
     {
@@ -155,7 +143,7 @@ class DB
     {
     	try {
     		return $this->pdo->commit();
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
     		$this->pdo->rollBack();
     		echo "Error: " . $e->getMessage();
     	}

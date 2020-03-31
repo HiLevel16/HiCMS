@@ -10,32 +10,33 @@ class View
 {
 	private $theme;
 
-	const DEFAULT_HEADER_NAME = 'header';
-	const DEFAULT_FOOTER_NAME = 'footer';
-	const DEFAULT_LOAD_FILE = 'load';
+	private $loadPath;
 
+	public $data = [];
 	
 	public function __construct(Theme $theme)
 	{
 		$this->theme = $theme;
+
+		$this->loadFile = $this->theme->getThemePath().DEFAULT_LOAD_FILE.'.php';
 	}
 
 	public function render($template, $data = [])
 	{
+		$components = [];
+		empty($data) ? : $this->data = $data;
 		$templatePath = $this->theme->getThemePath().$template.'.php';
-		if (!is_file($templatePath)) throw new \Exception("Template ".$templatePath." was not found");
-
-		$loadFile = $this->theme->getThemePath().self::DEFAULT_LOAD_FILE.'.php';
-		if (is_file($loadFile)) {
-			$load = (include $loadFile)[$template];
-
-			if ($load)
-			$components = $this->getComponents($load);
-		}
+		if (!file_exists($templatePath)) throw new \Exception("Template ".$templatePath." was not found");
 
 		
-		$data['title'] = "Hmm";
-		extract($data);
+		if (file_exists($this->loadFile)) {
+			$load = include $this->loadFile;
+
+			if (array_key_exists($template, $load))
+			$components = $this->getComponents($load[$template]);
+		}
+
+		extract($this->data);
         ob_start();
         ob_implicit_flush(0);
 
@@ -45,20 +46,50 @@ class View
             ob_end_clean();
             throw $e;
         }
-
-        echo $this->loadComponents(ob_get_clean(), $components);
+		echo $this->loadComponents(ob_get_clean(), $components);
 	}
 
-	public function header($name = '')
+	public function header($name = null)
 	{
-		$name = !empty($name) ? $name : self::DEFAULT_HEADER_NAME;
-		$this->render($name);
+		$name = $name ?? DEFAULT_HEADER_NAME;
+		$this->simpleRender($name);
 	}
 
-	public function footer($name = '')
+	public function footer($name = null)
 	{
-		$name = !empty($name) ? $name : self::DEFAULT_FOOTER_NAME;
-		$this->render($name);
+		$name = $name ?? DEFAULT_FOOTER_NAME;
+		$this->simpleRender($name);
+	}
+
+	public function sidebar($name = null)
+	{
+		$name = $name ?? DEFAULT_SIDEBAR_NAME;
+		$this->simpleRender($name);
+	}
+
+	private function simpleRender($template)
+	{
+		$components = [];
+		$templatePath = $this->theme->getThemePath().$template.'.php';
+		if (file_exists($this->loadFile)) {
+			$load = include $this->loadFile;
+
+			if (array_key_exists($template, $load))
+			$components = $this->getComponents($load[$template]);
+		}
+
+		extract($this->data);
+        ob_start();
+        ob_implicit_flush(0);
+
+        try {
+            require($templatePath);
+        } catch (\Exception $e){
+            ob_end_clean();
+            throw $e;
+        }
+		echo $this->loadComponents(ob_get_clean(), $components);
+		
 	}
 
 	private function getComponents($load)
@@ -67,9 +98,10 @@ class View
 		foreach ($load as $key => $point) {
 			$modules[$key] = [];
 			foreach ($point as $lang => $paths) {
-				foreach ($paths as $path) {
+				foreach ($paths as $path => $parameters) {
+					if (is_int($path)) $path = $parameters;
 					$path = Load::getAssetPath($lang, $path, $this->theme->getThemeGlobalPath());
-					array_push($modules[$key], Load::generateComponent($lang, $path));
+					array_push($modules[$key], Load::generateComponent($lang, $path, $parameters));
 				}
 			}
 		}
@@ -78,12 +110,14 @@ class View
 
 	private function loadComponents($preview, $components)
 	{
+		$tmp = '';
 		if (!$components) return $preview;
-		$render = '';
+		$render = $preview;
 		foreach ($components as $point => $modules) {
 			foreach ($modules as $module) {
-				$render .= str_replace('@.'.$point.' ', $module, $preview);
+				$tmp .= $module;
 			}
+			$render = str_replace('@.'.$point.' ', $tmp, $preview);
 		}
 		return $render;
 	}

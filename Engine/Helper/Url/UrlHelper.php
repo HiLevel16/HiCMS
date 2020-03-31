@@ -15,7 +15,7 @@ class UrlHelper
         {
             $pathUrl = substr($pathUrl, 0, $position);
         }
-        return $pathUrl;
+        return rtrim($pathUrl, '/');
 	}
 
 	static function getRoot()
@@ -31,5 +31,10 @@ class UrlHelper
 	static function getGlobalUrl()
 	{
 		return $_SERVER['SERVER_NAME'];
+	}
+
+	static function redirect($url)
+	{
+		header('Location: '.$url);
 	}
 }

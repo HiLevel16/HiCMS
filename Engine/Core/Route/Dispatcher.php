@@ -48,7 +48,7 @@ class Dispatcher
 
     public function getRoute($method, $url, $routes)
     {
-
+        $url = rtrim($url, '/');
         foreach ($routes as $route) {
 
             $pattern = '#^'.$route->getPattern().'$#s';
