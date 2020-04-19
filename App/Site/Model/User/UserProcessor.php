@@ -62,4 +62,13 @@ class UserProcessor extends Model
         return $query[0]->id;
         else return null;
     }
+
+    public function getAccessLevel($userId)
+    {
+        $query = $this->db->query('SELECT * FROM user_access WHERE user_id = :user_id LIMIT 1', [
+            'user_id' => $userId
+        ]);
+
+        return $query[0];
+    }
 }

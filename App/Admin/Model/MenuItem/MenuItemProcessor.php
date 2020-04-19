@@ -6,19 +6,14 @@ use Engine\Model;
 
 class MenuItemProcessor extends Model
 {
-    const levels = [
-        'admin' => 0,
-        'moderator' => 1,
-        'support' => 2,
-        'user' => 3
-    ];
 
-    public function getList($role)
+    public function getList($accessLevel)
     {
-        $rawMenus = $this->db->query("SELECT * FROM admin_menu");
+        $rawMenus = $this->db->query("SELECT * FROM admin_menu WHERE visible=1");
         $menus = [];
         foreach ($rawMenus as $rawMenu) {
-            if (self::levels[$rawMenu->access_level] >= self::levels[$role]) $menus[] = $rawMenu;
+            if ($accessLevel[$rawMenu->system_name]) 
+                $menus[] = $rawMenu;
         }
 
         foreach ($menus as $key => $menu) {
@@ -33,13 +28,4 @@ class MenuItemProcessor extends Model
         return $menus;
     }
 
-    public function hasAccess($role, $link)
-    {
-        $link = rtrim($link, '/');
-        $menu = $this->db->query("SELECT access_level FROM admin_menu WHERE link = :link", [
-            'link' => $link
-        ]);
-        if (self::levels[$menu[0]->access_level] >= self::levels[$role]) return true;
-        else return false;
-    }
 }

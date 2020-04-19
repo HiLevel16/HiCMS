@@ -4,7 +4,7 @@ namespace Engine\Core\View;
 /**
  * 
  */
-use Engine\Helper\Url\UrlHelper;
+use Engine\Helper\Request\Request;
 
 class Theme
 {
@@ -42,7 +42,7 @@ class Theme
 	{
 		$this->name = $name;
 
-		$path = UrlHelper::getRoot().'/App'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.$name.'/';
+		$path = Request::getRoot().'/App'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.$name.'/';
 		$globalPath = '/App/'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.$name.'/';
 
 		if (is_dir($path)) {
@@ -50,7 +50,7 @@ class Theme
 			$this->globalPath = $globalPath;
 		}
 		else {
-			$this->path = UrlHelper::getRoot().'/App/'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.DEFAULT_THEME.'/';
+			$this->path = Request::getRoot().'/App/'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.DEFAULT_THEME.'/';
 			$this->globalPath = '/App/'.ENV.'/'.DEFAULT_THEME_FOLDER.'/'.DEFAULT_THEME.'/';
 		}
 

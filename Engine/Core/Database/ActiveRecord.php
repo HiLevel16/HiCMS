@@ -47,6 +47,7 @@ trait ActiveRecord
         $properties = $this->getIssetProperties();
         try {
             if (isset($this->id)) {
+                
                 $save = $this->db->query(
                     $this->queryBuilder->update($this->getTable())
                         ->set($properties)

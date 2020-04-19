@@ -3,55 +3,53 @@
 namespace App\Admin\Controller;
 
 
-use Engine\Helper\Data\Data;
 use Engine\Helper\Hash\Hash;
-use Engine\Helper\Url\UrlHelper as Url;
+use Engine\Helper\Request\Request;
+use Engine\BackResponse\Error;
+use Engine\BackResponse\Success;
+use Engine\Helper\Session\Session;
 
 class LoginController extends AdminController
 {
 
-	
-	public function loginForm()
+
+    public function loginForm()
 	{
-        if ($this->auth->getAuthorize() && $this->user->getRole() != 'user') Url::redirect('/admin/dashboard');
+        if ($this->auth->getAuthorize() && $this->user->getRole() != 'user') Request::redirect('/admin/dashboard');
         $this->view->data['title'] = "Authorization";
 		$this->view->render('login', ['title' => "Authorization"]);
     }
     
     public function login()
     {
-        $credentials = Data::post();
-        if (is_array($credentials)) {
-            empty($credentials['login']) ? $this->abort('Login field mustn\'t be empty') : $login = $credentials['login'];
-            empty($credentials['password']) ? $this->abort('Password field mustn\'t be empty') : $password = Hash::password($credentials['password']);
+        $credentials = Request::post();
+        if (!empty($credentials) && is_array($credentials)) {
+            empty($credentials['login']) ? Error::print('Login field mustn\'t be empty') : $login = $credentials['login'];
+            empty($credentials['password']) ? Error::print('Password field mustn\'t be empty') : $password = Hash::password($credentials['password']);
             empty($credentials['remember']) ? $remember = false : $remember = $credentials['remember']; 
             $id = $this->checkCredentials($login, $password);
-            if (!$id) $this->abort('Incorrect login or password');
+            if (!$id) Error::print('Incorrect login or password');
             $hash = Hash::generate();
-            $this->auth->authorize($id, $hash, (bool)$remember);
-            $this->abort($hash, false, false);
+            $parameters['hash'] = $hash;
+            $parameters['id'] = $id;
+            $parameters['userAgent'] = Request::getUserAgent();
+            $parameters['ip'] = Request::getIp();
+            $this->auth->authorize($parameters, (bool)$remember);
+            Success::print($parameters['hash'], false);
+        } else {
+            Error::print('Incorrect data supplied');
         }
     }
 
     public function logout()
 	{
-        $this->auth->unAuthorize();
-        Url::redirect('/admin/login');
+        $this->auth->unAuthorize(Session::get(ID_SESSION_NAME));
+        Request::redirect('/admin/login');
 	}
 
     private function checkCredentials($login, $password, $code = null)
     {
         return $this->loadedModels['User']->checkCredentials($login, $password, $code);
-    }
-
-    private function abort($reason, $error = true, $exit = true)
-    {
-        if ($error) $outReason['status'] = 'error';
-        else $outReason['status'] = 'info';
-        $outReason['message'] = $reason;
-        echo json_encode($outReason);
-        if ($exit)
-        exit();
     }
 
     public function test()

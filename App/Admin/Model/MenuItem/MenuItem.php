@@ -9,6 +9,7 @@ class MenuItem
 
     use ActiveRecord;
 
+    protected $table = 'admin_menu';
     /**
      * $id
      *
@@ -38,11 +39,11 @@ class MenuItem
     public $icon;
 
     /**
-     * $access_level
+     * $system_name
      *
      * @var undefined
      */
-    public $access_level;
+    public $system_name;
 
     /**
      * @return mixed
@@ -127,19 +128,21 @@ class MenuItem
     /**
      * @return mixed
      */
-    public function getAccessLevel()
+    public function getSystem_name()
     {
         return $this->access_level;
     }
 
+    
     /**
-     * @param mixed $access_level
+     * setSystem_name
      *
-     * @return self
+     * @param mixed $system_name
+     * @return void
      */
-    public function setAccessLevel($access_level)
+    public function setSystem_name($system_name)
     {
-        $this->access_level = $access_level;
+        $this->system_name = $system_name;
 
         return $this;
     }

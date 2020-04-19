@@ -20,6 +20,60 @@ class User
 
     public $role;
 
+    public $registrationDate;
+
+    public $lastOnline;
+
+    public $status;
+
+    /**
+     * @return mixed
+     */
+    public function getRegistrationDate()
+    {
+        return $this->registrationDate;
+    }
+
+    /**
+     * @param mixed $registrationDate
+     */
+    public function setRegistrationDate($registrationDate): void
+    {
+        $this->registrationDate = $registrationDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastOnline()
+    {
+        return $this->lastOnline;
+    }
+
+    /**
+     * @param mixed $lastOnline
+     */
+    public function setLastOnline($lastOnline): void
+    {
+        $this->lastOnline = $lastOnline;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status): void
+    {
+        $this->status = $status;
+    }
+
     /**
      * @return mixed
      */
@@ -106,8 +160,7 @@ class User
     }
 
     /**
-     * @param mixed $hash
-     *
+     * @param $role
      * @return self
      */
     public function setRole($role)

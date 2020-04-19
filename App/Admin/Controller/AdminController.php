@@ -5,7 +5,7 @@ namespace App\Admin\Controller;
 use Engine\Controller;
 use Engine\Core\Auth;
 use Engine\Load;
-use Engine\Helper\Url\UrlHelper as Url;
+use Engine\Helper\Request\Request;
 
 class AdminController extends Controller
 {
@@ -36,9 +36,7 @@ class AdminController extends Controller
 
 	protected function getCurrentAuth() 
 	{
-		$auth = new Auth();
-
-		return $auth;
+        return new Auth();
 	}
 
 	protected function initAdmin()
@@ -47,8 +45,8 @@ class AdminController extends Controller
 		$this->user = $this->getCurrentUser();
 
 		if ($this->auth->getAuthorize() === false || $this->user->getRole() === 'user') {
-			if (Url::getUrl() != '/admin/login' && Url::getUrl() != '/admin/api/login')
-				Url::redirect('/admin/login');
+			if (Request::getUrl() != '/admin/login' && Request::getUrl() != '/admin/api/login')
+				Request::redirect('/admin/login');
 			
 		}
 	}

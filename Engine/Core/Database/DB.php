@@ -72,6 +72,16 @@ class DB
         }
     }
 
+    public function getPossibleValues($table, $column)
+    {
+        $cols = $this->query("SHOW COLUMNS FROM `{$table}` WHERE Field = :column", [
+            'column' => $column
+        ], \PDO::FETCH_ASSOC);
+
+        $type = $cols[0]['Type'];
+        preg_match('/enum\((.*)\)$/', $type, $matches);
+        return explode(',', $matches[1]);
+    }
 
     private function init($query, $parameters = [])
     {
@@ -85,7 +95,6 @@ class DB
 
             # Bind parameters
             $this->bind($parameters);
-
             if (!empty($this->parameters)) {
                 foreach ($this->parameters as $param => $value) {
                     if (is_int($value[1])) {
@@ -112,11 +121,11 @@ class DB
 
     private function bind($parameters)
     {
-        if (!empty($parameters) and is_array($parameters)) {
-            $columns = array_keys($parameters);
 
-            foreach ($columns as $i => &$column) {
-                $this->parameters[sizeof($this->parameters)] = [
+        if (!empty($parameters) && is_array($parameters)) {
+            $columns = array_keys($parameters);
+            foreach ($columns as $i => $column) {
+                $this->parameters[] = [
                     ':' . $column,
                     $parameters[$column]
                 ];

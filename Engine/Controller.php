@@ -19,6 +19,8 @@ abstract class Controller
 
 	protected $config;
 
+	protected $settings;
+
 	public function __construct () 
 	{
 		$this->init();
@@ -39,6 +41,12 @@ abstract class Controller
 	{
 		$dbCredentials = \Engine\Helper\Config\Config::getCoreConfig('DBsettings');
 		$this->db = new \Engine\Core\Database\DB($dbCredentials);
+	}
 
+	protected function getSettings()
+	{
+		$this->initDB();
+		$this->settings = \Engine\Helper\Config\Config::getGlobalSettings($this->db);
+		$this->db->close();
 	}
 }

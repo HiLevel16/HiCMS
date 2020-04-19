@@ -23,8 +23,7 @@ $(document).ready(function(){
             success:function(response){
                 response = JSON.parse(response);
                 if (response.status == 'error') {
-                    message.textContent = response.message;
-                    modal.style.display = "block";
+                    toastr.error(response.message, 'Error', {timeOut: 5000});
                     $("#btn_login").removeClass("loading");
                 } else {
                     document.location.href = '/admin/dashboard';

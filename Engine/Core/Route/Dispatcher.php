@@ -2,6 +2,8 @@
 
 namespace Engine\Core\Route;
 
+use Engine\Helper\Request\Request;
+
 /**
  * 
  */
@@ -14,7 +16,9 @@ class Dispatcher
     ];
 
     private $patterns = [
+        'integet' => '[0-9]+',
         'int' => '[0-9]+',
+        'string' => '[a-zA-Z\.\-_%]+',
         'str' => '[a-zA-Z\.\-_%]+',
         'any' => '[a-zA-Z0-9\.\-_%]+'
     ];
@@ -55,7 +59,13 @@ class Dispatcher
 
             if (preg_match($pattern, $url, $parameters) && $route->getMethod() == $method)
             {
-                $route->setParameters($this->dispatchParameters($parameters));
+                if ($route->getMethod() == $this->methods[0])
+                    $route->setParameters($this->dispatchParameters($parameters));
+                elseif($route->getMethod() == $this->methods[1])
+                    $route->setParameters($this->dispatchParameters(Request::post()));
+                else
+                    throw new \Exception("Undefined route method", 1);
+                    
                 return $route;
             }
 

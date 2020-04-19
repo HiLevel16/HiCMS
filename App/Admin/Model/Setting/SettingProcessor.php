@@ -33,6 +33,6 @@ class SettingProcessor extends Model
                 'id' => $key
             ]);
         }
-        var_dump($this->db->commit());
+        $this->db->commit();
     }
 }

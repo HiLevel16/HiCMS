@@ -2,7 +2,8 @@
 
 namespace App\Admin\Controller;
 
-use Engine\Helper\Url\UrlHelper;
+use Engine\BackResponse\Error;
+use Engine\Helper\Request\Request;
 use Engine\Load;
 
 /**
@@ -12,20 +13,29 @@ class DashboardController extends AdminController
 {
 	protected $menuItem;
 	
+	protected $userAccess;
+	
 	public function __construct()
 	{
-		$this->init();
-		$this->initAdmin();
-		$role = $this->getCurrentUser()->getRole();
+		parent::__construct();
+
 		$this->menuItem = Load::Model('MenuItem');
-		if (!$this->menuItem->hasAccess($role, UrlHelper::getUrl())) exit('You have no access to this page!');
+		$access = Load::Model('AccessLevel');
+		$this->userAccess = $access->getUserAccess($this->user->getId());
+		if (!$this->menuItem->hasAccess($this->userAccess, Request::getUrl())) Error::print('You do not have access to this segment');
+		$this->makeSettings();
 	}
 	
 	public function index()
 	{
 		$this->view->data['title'] = 'Dashboard';
 		$this->view->data['currentPage'] = 'Dashboard';
-		$this->view->data['menus'] = $this->menuItem->getList($this->getCurrentUser()->getRole());
 		$this->view->render('menuPages/dashboard');
+	}
+
+	protected function makeSettings()
+	{
+		$this->view->data['menus'] = $this->menuItem->getList($this->userAccess);
+		$this->view->data['access'] = $this->userAccess;
 	}
 }

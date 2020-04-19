@@ -2,7 +2,8 @@
 
 namespace App\Admin\Controller;
 
-use Engine\Helper\Data\Data;
+use Engine\BackResponse\Success;
+use Engine\Helper\Request\Request;
 use Engine\Load;
 
 class SettingController extends DashboardController
@@ -13,15 +14,14 @@ class SettingController extends DashboardController
         $this->view->data['settings'] = $setting->getSettings();
         $this->view->data['title'] = 'Settings';
 		$this->view->data['currentPage'] = 'Settings';
-		$this->view->data['menus'] = $this->menuItem->getList($this->getCurrentUser()->getRole());
 		$this->view->render('menuPages/settings');
     }
 
     public function update()
     {
-        $settings = Data::post();
+        $settings = Request::post();
         $setting = Load::Model('Setting');
         $setting->setSettings($settings);
-
+        Success::print('Changes successfully applied');
     }
 }

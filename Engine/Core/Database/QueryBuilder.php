@@ -56,8 +56,8 @@ class QueryBuilder
      */
     public function where($column, $value, $operator = '=')
     {
-        $this->sql['where'][] = "{$column} {$operator} ?";
-        $this->values[] = $value;
+        $this->sql['where'][] = "{$column} {$operator} :{$column}";
+        $this->values[$column] = $value;
 
         return $this;
     }
@@ -151,6 +151,7 @@ class QueryBuilder
 
         return $sql;
     }
+    
 
     /**
      * Reset Builder

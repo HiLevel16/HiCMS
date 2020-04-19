@@ -3,7 +3,7 @@
 
 namespace Engine\Core\Route;
 
-use Engine\Helper\Url\UrlHelper as Url;
+use Engine\Helper\Request\Request;
 
 class Router 
 {
@@ -17,7 +17,7 @@ class Router
 
 		$this->dispatcher = new Dispatcher();
 
-		include(Url::getRoot() . '/App/'.ENV.'/Routes.php');
+		include(Request::getRoot() . '/App/'.ENV.'/Routes.php');
 
 		return;
 	}

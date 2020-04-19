@@ -2,7 +2,7 @@
 
 namespace Engine;
 
-use Engine\Helper\Url\UrlHelper as Url;
+use Engine\Helper\Request\Request;
 use Engine\Helper\Config\Config;
 /**
  * 
@@ -22,22 +22,21 @@ class Cms
 
 		$dispatcher = new Core\Route\Dispatcher();
 
-		$route = $dispatcher->getRoute(Url::getMethod(), Url::getUrl(), $this->router->getRoutes());
+		$route = $dispatcher->getRoute(Request::getMethod(), Request::getUrl(), $this->router->getRoutes());
 
 		list($controllerName, $action) = explode('::', $route->getController());
 
 		$controllerPath = '\\App\\'.ENV.'\\Controller\\'.$controllerName;
-
-		$controller = new $controllerPath();
-
-		call_user_func_array([new $controller(), $action], $route->getParameters()==null ? [] : $route->getParameters());
-
+		
+		$result = call_user_func_array([new $controllerPath(), $action], $route->getParameters()==null ? [] : $route->getParameters());
+		
+		if ($result) echo $result;
 	}
 
 	public static function defineEnvironment()
 	{
 		$environments = Config::getCoreConfig('Environments');
-		$url = Url::getUrl();
+		$url = Request::getUrl().'/';
 
 		foreach ($environments as $key => $value) {
 			if (strpos($url, $key) !== false) {

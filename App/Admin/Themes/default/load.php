@@ -16,13 +16,12 @@ return [
 	'header' => [
 		'styles' => [
 			'css' => [
-				'css/style' => 'media="all"',//path without extension
-				'semanticui/semantic.min' => 'media="all"'
+				'css/bootstrap' => 'media="all"',//path without extension
+				'semanticui/semantic.min' => 'media="all"',
+                'css/style'
 			],
 			'js' => [
-				'js/main' => 'defer',
-				//'js/jquery.pjax'
-				//'semanticui/semantic.min',
+				'js/main'
 			]
 		]
 	]
